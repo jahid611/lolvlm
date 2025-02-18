@@ -1,49 +1,48 @@
 import React from 'react';
+import queues from '../data/queues.json';
 
-// Data Dragon champion images:
-// https://ddragon.leagueoflegends.com/cdn/15.3.1/img/champion/Aatrox.png
-// (on doit parfois mapper championName -> imageName, ex. "Wukong" => "MonkeyKing.png" ...)
+// Exemple minimal pour Wukong
+const championMapping = {
+  Wukong: "MonkeyKing.png" // la vrai image ID sur DDragon
+};
+
+// Fonction pour trouver le label de la queue
+function getQueueName(queueId) {
+  const queue = queues.find(q => q.queueId === queueId);
+  return queue ? queue.description : `Queue ${queueId}`;
+}
 
 function MatchHistory({ matches }) {
   if (!matches || matches.length === 0) {
-    return <div className="matches-section">Pas de match récent.</div>;
+    return <div className="matches-section"><p>Pas de match récent.</p></div>;
   }
-
-  // Petite fonction utilitaire pour tenter de mapper un championName
-  // vers le fichier PNG exact. Pour être 100% fiable, il vaut mieux
-  // récupérer la liste champion.json et faire la correspondance ID -> name.
-  const championToImage = (champ) => {
-    // Ex. "KhaZix" => "Khazix.png"
-    return champ.replace(/[^a-zA-Z]/g, '') + '.png';
-  };
 
   return (
     <div className="matches-section">
       <h3>Matchs récents</h3>
-      {matches.map((match) => {
-        const championImg = championToImage(match.championName);
+      {matches.map(match => {
+        // Corriger le nom d'image si championName est "Wukong"
+        const realChampionName = championMapping[match.championName] || `${match.championName}.png`;
+
         return (
-          <div
-            key={match.matchId}
-            className={`match-card ${match.win ? 'match-win' : 'match-lose'}`}
-          >
+          <div key={match.matchId} className={`match-card ${match.win ? 'match-win' : 'match-lose'}`}>
             <div>
               <img
-                src={`https://ddragon.leagueoflegends.com/cdn/15.3.1/img/champion/${championImg}`}
+                src={`https://ddragon.leagueoflegends.com/cdn/15.3.1/img/champion/${realChampionName}`}
                 alt={match.championName}
-                style={{ width: '40px', marginRight: '8px', verticalAlign: 'middle' }}
-                onError={(e) => {
-                  // si l'image n'est pas trouvée, fallback
-                  e.target.src =
-                    'https://ddragon.leagueoflegends.com/cdn/15.3.1/img/champion/Teemo.png';
-                }}
+                onError={(e) => { e.target.src = 'https://ddragon.leagueoflegends.com/cdn/15.3.1/img/champion/Teemo.png'; }}
               />
               <strong>{match.championName}</strong>
             </div>
-            <div>
-              {match.kills} / {match.deaths} / {match.assists}
+            <div className="match-info">
+              <p>{match.kills} / {match.deaths} / {match.assists}</p>
+              <p>Durée : {Math.floor(match.gameDuration / 60)}:{(match.gameDuration % 60).toString().padStart(2, '0')}</p>
+              <p>Mode : {match.gameMode} ({getQueueName(match.queueId)})</p>
+              <p>CS : {match.creepScore}</p>
             </div>
-            <div>{match.win ? 'Victoire' : 'Défaite'}</div>
+            <div className="match-result">
+              {match.win ? 'Victoire' : 'Défaite'}
+            </div>
           </div>
         );
       })}

@@ -8,7 +8,7 @@ function SummonerRank({ leagueEntries }) {
   return (
     <div className="rank-section">
       <h3>Classements</h3>
-      {leagueEntries.map((entry) => (
+      {leagueEntries.map(entry => (
         <div key={entry.queueType} className="rank-card">
           <p><strong>File :</strong> {entry.queueType}</p>
           <p><strong>Rang :</strong> {entry.tier} {entry.rank}</p>

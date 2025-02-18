@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './styles/opggStyle.css';
+import './styles/opggProfessional.css';
 import SearchBar from './components/SearchBar';
 import SummonerProfile from './components/SummonerProfile';
 import SummonerRank from './components/SummonerRank';
@@ -11,33 +11,52 @@ function App() {
   const [matches, setMatches] = useState([]);
   const [error, setError] = useState('');
 
-  const handleSearch = async (gameName, tagLine) => {
+  const handleSearch = async (region, gameName, tagLine) => {
     setError('');
     setSummoner(null);
     setLeagueEntries([]);
     setMatches([]);
 
     try {
-      // 1. Récupération du profil
-      let res = await fetch(`http://localhost:3001/api/summoner/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
-      if (!res.ok) throw new Error('Erreur lors de la récupération du profil.');
+      // 1) Récupérer le profil
+      let res = await fetch(`http://localhost:3001/api/summoner/${region}/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Joueur introuvable dans cette région.');
+        } else {
+          throw new Error('Erreur lors de la récupération du profil.');
+        }
+      }
       const summonerData = await res.json();
       setSummoner(summonerData);
 
-      // 2. Récupération des informations de classement
-      res = await fetch(`http://localhost:3001/api/league/${summonerData.id}`);
-      if (!res.ok) throw new Error('Erreur lors de la récupération des classements.');
+      // 2) Récupérer le classement
+      res = await fetch(`http://localhost:3001/api/league/${region}/${summonerData.id}`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Aucune information de rang trouvée.');
+        } else {
+          throw new Error('Erreur lors de la récupération des classements.');
+        }
+      }
       const leagueData = await res.json();
       setLeagueEntries(leagueData);
 
-      // 3. Récupération de l'historique de matchs (5 derniers matchs)
-      res = await fetch(`http://localhost:3001/api/matches/${summonerData.puuid}?count=5`);
-      if (!res.ok) throw new Error('Erreur lors de la récupération des matchs.');
+      // 3) Récupérer l'historique de matchs
+      res = await fetch(`http://localhost:3001/api/matches/${region}/${summonerData.puuid}?count=5`);
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Pas de matchs récents.');
+        } else {
+          throw new Error('Erreur lors de la récupération des matchs.');
+        }
+      }
       const matchesData = await res.json();
       setMatches(matchesData);
+
     } catch (err) {
       console.error(err);
-      setError('Impossible de récupérer les données du joueur.');
+      setError(err.message || 'Impossible de récupérer les données du joueur.');
     }
   };
 
