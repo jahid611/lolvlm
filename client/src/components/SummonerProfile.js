@@ -7,11 +7,13 @@ function SummonerProfile({ summoner }) {
 
   return (
     <div className="profile-section">
-      <img src={profileIconUrl} alt="Profile Icon" />
+      <img src={profileIconUrl} alt="Profile Icon" className="profile-icon" />
       <div className="profile-details">
-        <h2>{summoner.name} ({summoner.gameName}#{summoner.tagLine})</h2>
-        <p>Niveau {summoner.summonerLevel}</p>
-        <p>PUUID : {summoner.puuid}</p>
+        <h2 className="profile-name">
+          {summoner.name} <span className="tagline">({summoner.gameName}#{summoner.tagLine})</span>
+        </h2>
+        <p className="profile-level">Niveau {summoner.summonerLevel}</p>
+        {/* Pas d'affichage du PUUID */}
       </div>
     </div>
   );

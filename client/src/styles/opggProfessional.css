@@ -1,6 +1,6 @@
 /* opggProfessional.css */
 
-/* Réinitialisation */
+/* Reset de base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -8,58 +8,64 @@
 }
 
 body {
+  background: #1c1c1c;
+  color: #e0e0e0;
   font-family: 'Roboto', sans-serif;
-  background: #f0f2f5;
-  color: #333;
+}
+
+/* Root colors (rouge, etc.) */
+:root {
+  --opgg-red: #b22024;
+  --opgg-green: #4c8c2b;
+  --opgg-dark: #2a2a2a;
+  --opgg-border: #444;
 }
 
 /* Header */
 .header {
-  background: linear-gradient(90deg, #1a73e8, #4285f4);
+  background: var(--opgg-red);
   padding: 20px;
   text-align: center;
   color: #fff;
   font-size: 1.75rem;
   font-weight: 500;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-/* Conteneur principal */
 .container {
   max-width: 1100px;
   margin: 30px auto;
-  background: #fff;
+  background: #2b2b2b;
   padding: 30px 40px;
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.5);
 }
 
-/* Barre de recherche */
+/* Search Bar */
 .search-bar {
   display: flex;
   gap: 10px;
   margin-bottom: 30px;
 }
-
 .search-bar select,
 .search-bar input[type="text"] {
   flex: 1;
   padding: 14px 16px;
   font-size: 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid var(--opgg-border);
   border-radius: 4px;
+  background: #2a2a2a;
+  color: #ccc;
   transition: border 0.3s ease;
 }
-
 .search-bar input[type="text"]:focus,
 .search-bar select:focus {
-  border-color: #1a73e8;
+  border-color: var(--opgg-red);
   outline: none;
 }
-
 .search-bar button {
   padding: 14px 20px;
-  background: #1a73e8;
+  background: var(--opgg-red);
   border: none;
   border-radius: 4px;
   color: #fff;
@@ -67,131 +73,193 @@ body {
   cursor: pointer;
   transition: background 0.3s ease;
 }
-
 .search-bar button:hover {
-  background: #1558b0;
+  background: #92191c;
 }
 
-/* Profil */
+/* SummonerProfile */
 .profile-section {
   display: flex;
   align-items: center;
   gap: 20px;
   margin-bottom: 30px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--opgg-border);
   padding-bottom: 20px;
 }
-
-.profile-section img {
+.profile-icon {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  border: 3px solid #1a73e8;
+  border: 3px solid var(--opgg-red);
 }
-
-.profile-details h2 {
+.profile-details .profile-name {
   font-size: 1.75rem;
-  color: #1a73e8;
+  color: var(--opgg-red);
   margin-bottom: 8px;
 }
-
-.profile-details p {
+.profile-details .tagline {
   font-size: 1rem;
-  color: #666;
-  margin-bottom: 4px;
+  color: #ccc;
+}
+.profile-details .profile-level {
+  font-size: 1rem;
+  color: #aaa;
 }
 
-/* Classements */
+/* SummonerRank */
 .rank-section {
   margin-bottom: 30px;
 }
-
 .rank-section h3 {
   font-size: 1.5rem;
-  color: #1a73e8;
-  border-bottom: 2px solid #1a73e8;
+  color: var(--opgg-red);
+  border-bottom: 2px solid var(--opgg-red);
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
-
 .rank-card {
-  background: #fafafa;
+  background: #2a2a2a;
   padding: 15px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--opgg-border);
   border-radius: 6px;
   margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-
-.rank-card p {
-  font-size: 1rem;
-  color: #555;
+.rank-icon {
+  width: 64px;
+  height: 64px;
+}
+.rank-info p {
   margin-bottom: 4px;
+  color: #ccc;
 }
 
-/* Historique des matchs */
+/* Matches */
 .matches-section {
   margin-bottom: 30px;
 }
-
 .matches-section h3 {
   font-size: 1.5rem;
-  color: #1a73e8;
-  border-bottom: 2px solid #1a73e8;
+  color: var(--opgg-red);
+  border-bottom: 2px solid var(--opgg-red);
   padding-bottom: 10px;
   margin-bottom: 20px;
 }
 
-.match-card {
+/* opgg-match-card (scoreboard) */
+.opgg-match-card {
+  background: var(--opgg-dark);
+  border: 1px solid var(--opgg-border);
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 6px;
+}
+.opgg-match-header {
+  margin-bottom: 10px;
+}
+.opgg-match-header .opgg-match-info {
+  color: #ccc;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+/* team-block */
+.opgg-team-block {
+  background: #1c1c1c;
+  border: 1px solid var(--opgg-border);
+  border-radius: 4px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+.opgg-team-title {
+  font-size: 1rem;
+  margin-bottom: 6px;
+  color: #fff;
+}
+.opgg-team-title.win {
+  color: var(--opgg-green);
+}
+.opgg-team-title.lose {
+  color: #a62124;
+}
+
+/* Joueur row */
+.opgg-player-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: #fafafa;
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  transition: transform 0.2s ease;
+  gap: 8px;
+  background: #2a2a2a;
+  border: 1px solid var(--opgg-border);
+  border-radius: 3px;
+  padding: 5px;
+  margin-bottom: 4px;
 }
-
-.match-card:hover {
-  transform: translateY(-3px);
+.opgg-player-champion {
+  width: 100px;
+  color: #eee;
+  font-weight: 500;
 }
-
-.match-card img {
-  width: 50px;
-  border-radius: 4px;
-}
-
-.match-info {
-  flex: 1;
-  margin-left: 15px;
-  font-size: 1rem;
-  color: #555;
-}
-
-.match-result {
-  font-weight: bold;
+.opgg-player-summoner {
+  width: 150px;
   color: #fff;
-  padding: 8px 12px;
-  border-radius: 4px;
+}
+.opgg-player-kda {
+  width: 60px;
+  text-align: center;
+}
+.opgg-player-gold {
+  width: 60px;
+  text-align: center;
+}
+.opgg-player-damage {
+  width: 70px;
+  text-align: center;
+}
+.opgg-player-cs {
+  width: 50px;
+  text-align: center;
+}
+.opgg-player-spells {
+  display: flex;
+  gap: 4px;
+  width: 60px;
+  justify-content: center;
+}
+.opgg-spell-icon {
+  width: 24px;
+  height: 24px;
+}
+.opgg-player-items {
+  display: flex;
+  gap: 2px;
+  width: 200px;
+}
+.opgg-item-icon {
+  width: 24px;
+  height: 24px;
+}
+.opgg-item-empty {
+  width: 24px;
+  height: 24px;
+  background: #333;
+  display: inline-block;
 }
 
-.match-win .match-result {
-  background: #34a853;
-}
-
-.match-lose .match-result {
-  background: #ea4335;
-}
-
-/* Responsive */
 @media (max-width: 768px) {
-  .profile-section {
+  .opgg-player-row {
     flex-direction: column;
     align-items: flex-start;
   }
-
-  .search-bar {
-    flex-direction: column;
+  .opgg-player-champion,
+  .opgg-player-summoner,
+  .opgg-player-kda,
+  .opgg-player-gold,
+  .opgg-player-damage,
+  .opgg-player-cs,
+  .opgg-player-spells,
+  .opgg-player-items {
+    width: auto;
   }
 }
