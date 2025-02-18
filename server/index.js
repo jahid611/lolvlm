@@ -1,5 +1,3 @@
-// server/index.js
-
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
@@ -7,12 +5,11 @@ const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const RIOT_API_KEY = process.env.RIOT_API_KEY;
+const RIOT_API_KEY = process.env.RIOT_API_KEY; // Assurez-vous de définir cette variable dans .env si besoin
 
-// Active CORS pour autoriser les requêtes du front-end
 app.use(cors());
 
-// Mappings régionaux pour Account-V1, Summoner-V4 et Match-V5
+// Mappings de région
 const accountRegionMapping = {
   euw: "europe",
   eune: "europe",
@@ -20,7 +17,6 @@ const accountRegionMapping = {
   kr: "asia",
   jp: "asia"
 };
-
 const summonerRegionMapping = {
   euw: "euw1",
   eune: "eun1",
@@ -28,7 +24,6 @@ const summonerRegionMapping = {
   kr: "kr",
   jp: "jp1"
 };
-
 const matchRegionMapping = {
   euw: "europe",
   eune: "europe",
@@ -38,31 +33,31 @@ const matchRegionMapping = {
 };
 
 /**
- * 1. Endpoint pour récupérer le profil d’un joueur via Riot ID
+ * Endpoint 1 : Récupérer le profil via Riot ID
  * GET /api/summoner/:region/by-riot-id/:gameName/:tagLine
  */
 app.get('/api/summoner/:region/by-riot-id/:gameName/:tagLine', async (req, res) => {
   const { region, gameName, tagLine } = req.params;
-  
+
   if (!accountRegionMapping[region] || !summonerRegionMapping[region]) {
     return res.status(400).json({ message: "Région non supportée ou invalide." });
   }
 
   try {
-    // 1. Récupérer le PUUID via Account-V1
+    // 1) Récupérer le PUUID via Account-V1
     const accountUrl = `https://${accountRegionMapping[region]}.api.riotgames.com/riot/account/v1/accounts/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`;
     const accountRes = await axios.get(accountUrl, {
       headers: { 'X-Riot-Token': RIOT_API_KEY }
     });
     const puuid = accountRes.data.puuid;
 
-    // 2. Récupérer les infos Summoner-V4 (name, profileIconId, summonerLevel, etc.)
+    // 2) Récupérer les infos Summoner-V4
     const summonerUrl = `https://${summonerRegionMapping[region]}.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/${puuid}`;
     const summonerRes = await axios.get(summonerUrl, {
       headers: { 'X-Riot-Token': RIOT_API_KEY }
     });
 
-    // Fusionner les infos
+    // Fusion des données
     res.json({
       ...summonerRes.data,
       gameName: accountRes.data.gameName,
@@ -73,18 +68,16 @@ app.get('/api/summoner/:region/by-riot-id/:gameName/:tagLine', async (req, res) 
     console.error(error.response?.data || error.message);
 
     if (error.response) {
-      // Retourner le code d'erreur exact si connu
       return res.status(error.response.status).json({
         message: error.response.data.status?.message || "Impossible de récupérer le profil."
       });
     }
-    // Sinon, erreur interne
     res.status(500).json({ message: "Erreur interne lors de la récupération du profil." });
   }
 });
 
 /**
- * 2. Endpoint pour récupérer les infos de classement (League-V4)
+ * Endpoint 2 : Récupérer les infos de classement
  * GET /api/league/:region/:encryptedSummonerId
  */
 app.get('/api/league/:region/:encryptedSummonerId', async (req, res) => {
@@ -112,7 +105,7 @@ app.get('/api/league/:region/:encryptedSummonerId', async (req, res) => {
 });
 
 /**
- * 3. Endpoint pour récupérer l'historique de matchs (Match-V5)
+ * Endpoint 3 : Récupérer l'historique de matchs
  * GET /api/matches/:region/:puuid?count=5
  */
 app.get('/api/matches/:region/:puuid', async (req, res) => {
@@ -124,13 +117,13 @@ app.get('/api/matches/:region/:puuid', async (req, res) => {
   }
 
   try {
-    // 1. Récupérer les IDs de matchs
+    // 1) Récupérer les IDs de matchs
     const matchIdsUrl = `https://${matchRegionMapping[region]}.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=${count}`;
     const matchIdsRes = await axios.get(matchIdsUrl, {
       headers: { 'X-Riot-Token': RIOT_API_KEY }
     });
 
-    // 2. Pour chaque match, récupérer les détails
+    // 2) Récupérer les détails de chaque match
     const matchDetailsPromises = matchIdsRes.data.map(matchId =>
       axios.get(`https://${matchRegionMapping[region]}.api.riotgames.com/lol/match/v5/matches/${matchId}`, {
         headers: { 'X-Riot-Token': RIOT_API_KEY }
@@ -138,7 +131,7 @@ app.get('/api/matches/:region/:puuid', async (req, res) => {
     );
     const matchesRes = await Promise.all(matchDetailsPromises);
 
-    // 3. Construire un tableau d'objets simplifiés
+    // 3) Construire un tableau d'objets simplifiés
     const matchDetails = matchesRes.map(resp => {
       const info = resp.data.info;
       const participant = info.participants.find(p => p.puuid === puuid) || {};

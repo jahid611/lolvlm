@@ -1,8 +1,22 @@
 [
-    { "queueId": 420, "description": "Ranked Solo" },
-    { "queueId": 430, "description": "Normal Blind" },
-    { "queueId": 440, "description": "Ranked Flex" },
-    { "queueId": 450, "description": "ARAM" },
-    { "queueId": 900, "description": "ARURF" }
-  ]
-  
+  {
+    "queueId": 420,
+    "description": "Ranked Solo"
+  },
+  {
+    "queueId": 430,
+    "description": "Normal Blind"
+  },
+  {
+    "queueId": 440,
+    "description": "Ranked Flex"
+  },
+  {
+    "queueId": 450,
+    "description": "ARAM"
+  },
+  {
+    "queueId": 900,
+    "description": "ARURF"
+  }
+]

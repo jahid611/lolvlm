@@ -1,12 +1,11 @@
 import React from 'react';
 import queues from '../data/queues.json';
 
-// Exemple minimal pour Wukong
+// Exemple minimal pour un championName particulier
 const championMapping = {
-  Wukong: "MonkeyKing.png" // la vrai image ID sur DDragon
+  Wukong: "MonkeyKing.png"
 };
 
-// Fonction pour trouver le label de la queue
 function getQueueName(queueId) {
   const queue = queues.find(q => q.queueId === queueId);
   return queue ? queue.description : `Queue ${queueId}`;
@@ -21,7 +20,6 @@ function MatchHistory({ matches }) {
     <div className="matches-section">
       <h3>Matchs récents</h3>
       {matches.map(match => {
-        // Corriger le nom d'image si championName est "Wukong"
         const realChampionName = championMapping[match.championName] || `${match.championName}.png`;
 
         return (

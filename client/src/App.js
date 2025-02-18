@@ -5,6 +5,16 @@ import SummonerProfile from './components/SummonerProfile';
 import SummonerRank from './components/SummonerRank';
 import MatchHistory from './components/MatchHistory';
 
+function getBaseURL() {
+  if (process.env.NODE_ENV === 'production') {
+    // URL de votre back-end déployé (ex. Render)
+    return 'https://lolvlm.onrender.com';
+  } else {
+    // URL de votre back-end local
+    return 'http://localhost:3001';
+  }
+}
+
 function App() {
   const [summoner, setSummoner] = useState(null);
   const [leagueEntries, setLeagueEntries] = useState([]);
@@ -17,9 +27,11 @@ function App() {
     setLeagueEntries([]);
     setMatches([]);
 
+    const baseURL = getBaseURL();
+
     try {
       // 1) Récupérer le profil
-      let res = await fetch(`http://localhost:3001/api/summoner/${region}/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
+      let res = await fetch(`${baseURL}/api/summoner/${region}/by-riot-id/${encodeURIComponent(gameName)}/${encodeURIComponent(tagLine)}`);
       if (!res.ok) {
         if (res.status === 404) {
           throw new Error('Joueur introuvable dans cette région.');
@@ -31,7 +43,7 @@ function App() {
       setSummoner(summonerData);
 
       // 2) Récupérer le classement
-      res = await fetch(`http://localhost:3001/api/league/${region}/${summonerData.id}`);
+      res = await fetch(`${baseURL}/api/league/${region}/${summonerData.id}`);
       if (!res.ok) {
         if (res.status === 404) {
           throw new Error('Aucune information de rang trouvée.');
@@ -43,7 +55,7 @@ function App() {
       setLeagueEntries(leagueData);
 
       // 3) Récupérer l'historique de matchs
-      res = await fetch(`http://localhost:3001/api/matches/${region}/${summonerData.puuid}?count=5`);
+      res = await fetch(`${baseURL}/api/matches/${region}/${summonerData.puuid}?count=5`);
       if (!res.ok) {
         if (res.status === 404) {
           throw new Error('Pas de matchs récents.');
