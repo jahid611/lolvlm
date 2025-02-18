@@ -4,12 +4,19 @@ const axios = require('axios');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-const RIOT_API_KEY = process.env.RIOT_API_KEY; // Assurez-vous de définir cette variable dans .env si besoin
 
+// Sur Render, process.env.PORT est défini automatiquement.
+// En local, on retombe sur 3001 si process.env.PORT est undefined.
+const PORT = process.env.PORT || 3001;
+
+// Récupérez la clé Riot depuis les variables d'environnement
+// (définie dans .env en local, et dans l'onglet "Environment" sur Render)
+const RIOT_API_KEY = process.env.RIOT_API_KEY;
+
+// Autoriser les requêtes cross-origin (depuis votre front-end)
 app.use(cors());
 
-// Mappings de région
+// Mappings de régions
 const accountRegionMapping = {
   euw: "europe",
   eune: "europe",
@@ -33,7 +40,15 @@ const matchRegionMapping = {
 };
 
 /**
- * Endpoint 1 : Récupérer le profil via Riot ID
+ * Route racine : GET /
+ * Si vous allez sur https://votre-app.onrender.com/, vous verrez ce message.
+ */
+app.get('/', (req, res) => {
+  res.send('Hello from server!');
+});
+
+/**
+ * 1. Récupérer le profil d’un joueur via Riot ID
  * GET /api/summoner/:region/by-riot-id/:gameName/:tagLine
  */
 app.get('/api/summoner/:region/by-riot-id/:gameName/:tagLine', async (req, res) => {
@@ -68,16 +83,18 @@ app.get('/api/summoner/:region/by-riot-id/:gameName/:tagLine', async (req, res) 
     console.error(error.response?.data || error.message);
 
     if (error.response) {
+      // Si l'API Riot renvoie un code d'erreur (404, 403, etc.)
       return res.status(error.response.status).json({
         message: error.response.data.status?.message || "Impossible de récupérer le profil."
       });
     }
+    // Erreur interne si pas de response
     res.status(500).json({ message: "Erreur interne lors de la récupération du profil." });
   }
 });
 
 /**
- * Endpoint 2 : Récupérer les infos de classement
+ * 2. Récupérer les infos de classement (League-V4)
  * GET /api/league/:region/:encryptedSummonerId
  */
 app.get('/api/league/:region/:encryptedSummonerId', async (req, res) => {
@@ -105,7 +122,7 @@ app.get('/api/league/:region/:encryptedSummonerId', async (req, res) => {
 });
 
 /**
- * Endpoint 3 : Récupérer l'historique de matchs
+ * 3. Récupérer l'historique de matchs (Match-V5)
  * GET /api/matches/:region/:puuid?count=5
  */
 app.get('/api/matches/:region/:puuid', async (req, res) => {
@@ -165,6 +182,7 @@ app.get('/api/matches/:region/:puuid', async (req, res) => {
   }
 });
 
+// Lancement du serveur
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur le port ${PORT}`);
 });
